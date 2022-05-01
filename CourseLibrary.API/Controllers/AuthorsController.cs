@@ -5,6 +5,7 @@ using System;
 namespace CourseLibrary.API.Controllers
 {
     [ApiController] // optional, useful
+    [Route("api/authors")]
     public class AuthorsController : ControllerBase
     {
         private readonly ICourseLibraryRepository _courseLibraryRepository;
@@ -13,12 +14,27 @@ namespace CourseLibrary.API.Controllers
         {
             this._courseLibraryRepository = courseLibraryRepository ?? throw new ArgumentNullException(nameof(courseLibraryRepository));
         }
-        [HttpGet("api/authors")]
+
+        [HttpGet()]
         public IActionResult GetAuthors()
         {
             var authorsFromRepo = _courseLibraryRepository.GetAuthors();
 
-            return new JsonResult(authorsFromRepo); // formats object as JSON
+            return Ok(authorsFromRepo); // formats object as JSON
+        }
+
+        [HttpGet("{authorId:guid}")]
+        public IActionResult GetAuthor(Guid authorId)
+        {
+            var authorFromRepo = _courseLibraryRepository.GetAuthor(authorId);
+
+            if (authorFromRepo == null)
+            {
+                return NotFound();
+            }           
+            
+            return Ok(authorFromRepo); // formats object as JSON
+            
         }
     }
 }
